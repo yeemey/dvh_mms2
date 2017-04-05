@@ -7,7 +7,6 @@ python 3.5.2
 BioPython 1.68
 
 @author: ymseah
-v.0.1 updated 4/3/17
 """
 
 from blastUnmapped import run_software, parse_results
@@ -21,5 +20,5 @@ run_object = run_software()
 #                            '/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/breseq_results/')
 #run_object.run_breseq('/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/20161202/',
 #                      'sic_HE3.118','/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/breseq_results/')
-run_object.run_gdtools_compare('sic_HE3-15', 'sic_HE3.45', 'sic_HE3-76', 'sic_HE3-118')
-#run_object.run_blastn_remote('sic_HA3.45')
+#run_object.run_gdtools_compare('sic_HE3-15', 'sic_HE3.45', 'sic_HE3-76', 'sic_HE3-118')
+run_object.run_blastn_remote('sic_HA3.45')

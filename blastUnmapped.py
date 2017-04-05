@@ -6,7 +6,6 @@ python 3.5.2
 BioPython 1.68
 
 @author: ymseah
-v.0.1 updated 4/3/17
 """
 #from Bio import SeqIO
 #from Bio.Seq import Seq
@@ -143,15 +142,11 @@ class run_software:
         for sample in all_samples:
             self.run_breseq(pear_results_dir, sample, breseq_output_dir)
     
-    def run_gdtools_compare(self, *samples, output_format = '.gd', breseq_dir = '/opt/data/wkim-rsrch/breseq_results/', 
+    def run_gdtools_compare(self, *samples, breseq_dir = '/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/breseq_results/', 
                             ref_dir = '/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/data/', 
                             ref_genome1 = 'dv.gbk', ref_genome2 = 'mp.gbk', ref_genome3 = 'megaplasma.gbk'):
         """
-        Usage: Rename output.gd files to evolution_line-generation.gd, and run gdtools COMPARE [-o annotated.gd] -r reference.gbk input.1.gd [input.2.gd ... ]
-        Input: 'samples' are sample names formatted like this 'sic_HE3-15'. 
-        Evolution line is inferred by indexed slicing of the sample names.
-        Generation is inferred by matching characters after (and including) hyphen in sample names.
-        Output: gd (default) or html formats.
+        Usage: gdtools COMPARE [-o annotated.html] -r reference.gbk input.1.gd [input.2.gd ... ]
         """
         ref1 = ref_dir + ref_genome1
         ref2 = ref_dir + ref_genome2
@@ -161,7 +156,7 @@ class run_software:
         evo_line = evo_line[4:]
         evo_line_end_index = re.search('\.|-|_', evo_line).start()
         evo_line = evo_line[:evo_line_end_index]
-        output_file = breseq_dir + 'compare/' + evo_line + output_format
+        output_file = breseq_dir + 'compare/' + evo_line + '.html'
         args = ['gdtools', 'COMPARE', '-o', output_file, '-r', ref1, '-r', ref2,'-r', ref3, ancestor]
 
         sample_counter = 0
