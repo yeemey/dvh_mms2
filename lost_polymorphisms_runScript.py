@@ -22,8 +22,8 @@ ancestor_df = cp.annotated_gd_to_df(input_directory + 'sic_Ancestor_breseq/outpu
 
 for file in compare_files:
     print(file)
-    evolution_line = str(file)[-6:-9]
-    print('Evolution line: ' + evolution_line)
+    evolution_line = file[-8:-5]
+    print(evolution_line)
     bs_from_html = cp.parse_compare_html(file)
     mutation_freqs_dict = cp.get_generation_frequencies(bs_from_html)
     suspect_freqs_dict = cp.get_suspect_frequencies(mutation_freqs_dict)
@@ -32,7 +32,7 @@ for file in compare_files:
     all_dataframes = [ancestor_df]
     for genome_diff in annotated_gd_files:
         print(genome_diff)
-        generation = int(genome_diff[-4:-9].split('-')[1])
+        generation = int(genome_diff[-8:-3].split('-')[1])
         print(generation)
         dataframe = cp.annotated_gd_to_df(genome_diff, generation)
         all_dataframes.append(dataframe)
