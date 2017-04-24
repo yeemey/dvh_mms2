@@ -90,37 +90,37 @@ class ComparePolymorphisms:
         summary.insert(3, 'gene_product', '')
         summary.insert(4, 'gene_position', '')
         summary.insert(5, 'reject', '')
-        for row in summary_df.itertuples():
+        for row in summary.itertuples():
             #check each column
             col_index = 6
             while col_index < 50:
                 #1. polymorphism frequencies
-                if re.match('frequency=', str(summary_df.loc[row[0], col_index])):
-                    summary_df.loc[row[0], 'frequency'] = re.sub('frequency=', '', str(summary_df.loc[row[0], col_index]))
+                if re.match('frequency=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'frequency'] = re.sub('frequency=', '', str(summary.loc[row[0], col_index]))
                 #2. gene products
-                elif re.match('gene_product=', str(summary_df.loc[row[0], col_index])):
-                    summary_df.loc[row[0], 'gene_product'] = re.sub('gene_product=', '', str(summary_df.loc[row[0], col_index]))
+                elif re.match('gene_product=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'gene_product'] = re.sub('gene_product=', '', str(summary.loc[row[0], col_index]))
                 #3. polymorphism rejection reasons
-                elif re.match('reject=', str(summary_df.loc[row[0], col_index])):
-                    summary_df.loc[row[0], 'reject'] = re.sub('reject=', '', str(summary_df.loc[row[0], col_index]))
+                elif re.match('reject=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'reject'] = re.sub('reject=', '', str(summary.loc[row[0], col_index]))
                 #4. gene annotations
-                elif re.match('gene_position=', str(summary_df.loc[row[0], col_index])):
-                    summary_df.loc[row[0], 'gene_position'] = re.sub('gene_position=', '', str(summary_df.loc[row[0], col_index]))
+                elif re.match('gene_position=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'gene_position'] = re.sub('gene_position=', '', str(summary.loc[row[0], col_index]))
                 col_index += 1
             #set frequencies type to float
-            if re.match('1|2|3|4|5|6|7|8|9', str(summary_df.loc[row[0], 'frequency'])):
-                summary_df.loc[row[0], 'frequency'] = float(summary_df.loc[row[0], 'frequency'])
+            if re.match('1|2|3|4|5|6|7|8|9', str(summary.loc[row[0], 'frequency'])):
+                summary.loc[row[0], 'frequency'] = float(summary.loc[row[0], 'frequency'])
             else:
-                summary_df.loc[row[0], 'frequency'] = 0.0
+                summary.loc[row[0], 'frequency'] = 0.0
             #set positions (col 4) type to int
-            summary_df.loc[row[0], 4] = int(summary_df.loc[row[0], 4])
+            summary.loc[row[0], 4] = int(summary.loc[row[0], 4])
             #set reject col to 'NA' when no reject reason given.
-            if (summary_df.loc[row[0], 'reject'] == '') & (summary_df.loc[row[0], 2] == '.'):
-                summary_df.loc[row[0], 'reject'] = 'NA'
-        summary_df.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_ids', 3: 'ref_genome', 4:'position'}, inplace=True)
-        summary_df_subset = summary_df[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 'item_id', 'evidence_ids', 'ref_genome', 'position']].copy()
-        summary_df_subset.to_csv(output_path + 'summary_df_subset.csv', index=False)
-        return summary_df_subset
+            if (summary.loc[row[0], 'reject'] == '') & (summary.loc[row[0], 2] == '.'):
+                summary.loc[row[0], 'reject'] = 'NA'
+        summary.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_ids', 3: 'ref_genome', 4:'position'}, inplace=True)
+        summary_subset = summary[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 'item_id', 'evidence_ids', 'ref_genome', 'position']].copy()
+        summary_subset.to_csv(output_path + 'summary_df_subset.csv', index=False)
+        return summary_subset
 
     def get_reject_reasons(self, summary_df_subset, suspect_frequencies_dict):
         '''
