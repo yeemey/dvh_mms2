@@ -174,3 +174,26 @@ class ComparePolymorphisms:
         print('Done')
         return
             
+    def get_rejected_evidence(self, summary_df_subset, suspect_frequencies_dict):
+        summary_df_subset_evidence = summary_df_subset[(summary_df_subset['entry_type'] == 'RA') |
+                (summary_df_subset['entry_type'] == 'MC') | 
+                (summary_df_subset['entry_type'] == 'JC') | 
+                (summary_df_subset['entry_type'] == 'UN')]
+        rejected_evidence_dict = {}
+        for key in suspect_frequencies_dict.items:
+            row_indices = summary_df_subset_evidence[(summary_df_subset_evidence['ref_genome'] == key[0]) &
+                                                     (summary_df_subset_evidence['position'] == key[1])]
+            for row in row_indices:
+                reject_reason = summary_df_subset_evidence.loc[row, 'reject']
+                evidence_type = summary_df_subset_evidence.loc[row, 'entry_type']
+                rejected_evidence_dict[key] = [reject_reason, evidence_type]
+        return rejected_evidence_dict
+    
+    def write_evidence_dicts_to_file(self, dictionary, filename_prefix):
+        print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
+        with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
+            output_file.write('ref_genome\tposition\treject_reason\tevidence_type\n')
+            for key, value in dictionary.items():
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\n')
+        print('Done')
+        return
