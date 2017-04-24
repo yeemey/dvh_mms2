@@ -40,4 +40,4 @@ for file in compare_files:
     evolution_line_dataframe = cp.summary_df(evolution_line, all_dataframes, output_directory)
     new_suspect_freqs_dict = cp.get_reject_reasons(evolution_line_dataframe, suspect_freqs_dict)
     cp.write_frequency_dicts_to_file(suspect_freqs_dict, evolution_line + '_suspect')
-    cp.write_frequency_dicts_to_file(new_suspect_freqs_dict, evolution_line + '_suspect_reasons')     
+    cp.write_frequency_dicts_to_file(new_suspect_freqs_dict, output_directory + evolution_line + '_suspect_reasons')     

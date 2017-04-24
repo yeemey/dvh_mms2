@@ -90,7 +90,9 @@ class ComparePolymorphisms:
         summary.insert(3, 'gene_product', '')
         summary.insert(4, 'gene_position', '')
         summary.insert(5, 'reject', '')
+        print('Creating summary data frame for ' + line_name)
         for row in summary.itertuples():
+            print(row[0])
             #check each column
             col_index = 6
             while col_index < 50:
@@ -128,6 +130,7 @@ class ComparePolymorphisms:
         Input2: dictionary of all suspect frequencies (i.e., output from get_suspect_frequencies() method.)
         Output: modified Input2 with reasons for suspect frequencies looked up from Input1, if available.
         '''
+        print('Cross-checking summary data frame and suspect frequencies ...')
         summary_df_subset_mutations = summary_df_subset[(summary_df_subset['entry_type'] == 'SNP') | 
                 (summary_df_subset['entry_type'] == 'SUB') | 
                 (summary_df_subset['entry_type'] == 'DEL') | 
@@ -162,10 +165,12 @@ class ComparePolymorphisms:
         Input2: string prefix for output file name, to identify evolution line etc.
         Output: tab-separated text file of Input1 content.
         '''
+        print('Writing to ' + filename_prefix + '_frequencies.tsv ...')
         with open(filename_prefix + '_frequencies.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tmutation\tfreq_anc\tfreq_100\tfreq_300\tfreq_500\tfreq_780\tfreq_1000\n')
             for key, value in dictionary.items():
-                output_file.write(key[0] + '\t' + key[1] + '\t' + value[0] + '\t' + value[1] + '\t' + value[2] + '\t' 
-                                  + value[3] + '\t' + value[4] + '\t' + value[5] + '\t' + value[6] + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' 
+                                  + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\n')
+        print('Done')
         return
             
