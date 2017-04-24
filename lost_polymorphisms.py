@@ -115,7 +115,7 @@ class ComparePolymorphisms:
                 summary.loc[row[0], 'frequency'] = 0.0
             #set positions (col 4) type to int
             summary.loc[row[0], 4] = int(summary.loc[row[0], 4])
-            #set reject col to 'NA' when no reject reason given.
+            #set reject col to 'NA' when no reject reason given because row represents evidence, not polymorphism.
             if (summary.loc[row[0], 'reject'] == '') & (summary.loc[row[0], 2] == '.'):
                 summary.loc[row[0], 'reject'] = 'NA'
             print(line_name + str(row[0]) + ' done.')
