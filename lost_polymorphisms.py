@@ -92,7 +92,6 @@ class ComparePolymorphisms:
         summary.insert(5, 'reject', '')
         print('Creating summary data frame for ' + line_name)
         for row in summary.itertuples():
-            print(row[0])
             #check each column
             col_index = 6
             while col_index < 50:
@@ -119,9 +118,10 @@ class ComparePolymorphisms:
             #set reject col to 'NA' when no reject reason given.
             if (summary.loc[row[0], 'reject'] == '') & (summary.loc[row[0], 2] == '.'):
                 summary.loc[row[0], 'reject'] = 'NA'
+            print(line_name + str(row[0]) + ' done.')
         summary.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_ids', 3: 'ref_genome', 4:'position'}, inplace=True)
         summary_subset = summary[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 'item_id', 'evidence_ids', 'ref_genome', 'position']].copy()
-        summary_subset.to_csv(output_path + 'summary_df_subset.csv', index=False)
+        summary_subset.to_csv(output_path + line_name + 'summary_df_subset.csv', index=False)
         return summary_subset
 
     def get_reject_reasons(self, summary_df_subset, suspect_frequencies_dict):
