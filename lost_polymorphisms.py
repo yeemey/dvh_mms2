@@ -156,7 +156,7 @@ class ComparePolymorphisms:
                         value[6] = str(value[6]) + ' ' + reject_reason
         return suspect_frequencies_dict
     
-    def write_frequency_dicts_to_file(dictionary, filename_prefix):
+    def write_frequency_dicts_to_file(self, dictionary, filename_prefix):
         '''
         Input1: dictionary of suspect frequencies (i.e., output from get_suspect_frequencies() or get_reject_reasons().)
         Input2: string prefix for output file name, to identify evolution line etc.
