@@ -9,7 +9,7 @@ from lost_polymorphisms import ComparePolymorphisms
 import glob
 
 input_directory = '/opt/data/wkim-rsrch/breseq_results/'
-output_directory = '/home/NETID/ymseah/Projects/lost_polymorphisms_in_breseq/results/20170424/'
+output_directory = '/home/NETID/ymseah/Projects/lost_polymorphisms_in_breseq/results/'
 generations = [0, 100, 300, 500, 780, 1000]
 
 compare_files = glob.glob(input_directory + 'compare/[H|U]*.html')
@@ -25,8 +25,8 @@ for file in compare_files:
     evolution_line = file[-8:-5]
     print(evolution_line)
     bs_from_html = cp.parse_compare_html(file)
-    mutation_freqs_dict = cp.get_generation_frequencies(bs_from_html)
-    suspect_freqs_dict = cp.get_suspect_frequencies(mutation_freqs_dict)
+    mutation_freqs_dict = cp.get_html_generation_frequencies(bs_from_html)
+    suspect_freqs_dict = cp.get_suspect_html_frequencies(mutation_freqs_dict)
     annotated_gd_files = glob.glob(input_directory + 'sic_' + evolution_line + '*/output/*.gd')
     print(annotated_gd_files)
     all_dataframes = [ancestor_df]
@@ -38,7 +38,7 @@ for file in compare_files:
         all_dataframes.append(dataframe)
     print(all_dataframes)
     evolution_line_dataframe = cp.summary_df(evolution_line, all_dataframes, output_directory)
-    cp.write_frequency_dicts_to_file(suspect_freqs_dict, output_directory + evolution_line + '_suspect')
+    cp.write_html_frequency_dicts_to_file(suspect_freqs_dict, output_directory + evolution_line + '_suspect')
     #find rejected evidence for polymorphisms with 0% frequencies
     evidence_dict = cp.get_rejected_polymorphisms(evolution_line_dataframe, suspect_freqs_dict)
     cp.write_rejected_dicts_to_file(evidence_dict, output_directory + evolution_line)

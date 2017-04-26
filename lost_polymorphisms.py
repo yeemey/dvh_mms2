@@ -21,7 +21,7 @@ class ComparePolymorphisms:
         bs_object = BeautifulSoup(open(filepath), 'html.parser')
         return bs_object
 
-    def get_generation_frequencies(self, data_html_object):
+    def get_html_generation_frequencies(self, data_html_object):
         '''
         Input: compare html object parsed by BeautifulSoup
         Output: dictionary of mutation frequencies across generations
@@ -46,7 +46,7 @@ class ComparePolymorphisms:
                 generation_frequencies_dict[gen_freqs_key] = gen_freqs_value
         return generation_frequencies_dict
 
-    def get_suspect_frequencies(self, generation_frequencies_dict):
+    def get_suspect_html_frequencies(self, generation_frequencies_dict):
         '''
         Input: dictionary of mutation frequencies from get_generation_frequencies()
         Output: dictionary subset of input, only containing values with frequency patterns '100% - 0% - 100%'.
@@ -90,8 +90,13 @@ class ComparePolymorphisms:
         summary.insert(3, 'gene_product', '')
         summary.insert(4, 'gene_position', '')
         summary.insert(5, 'reject', '')
+        summary.insert(6, 'jc_side2_ref_genome', '')
+        summary.insert(7, 'jc_side2_position', '')
         print('Creating summary data frame for ' + line_name)
         for row in summary.itertuples():
+            if summary.loc[row[0], 0] == 'JC':
+                summary.loc[row[0], 'jc_side2_ref_genome'] = summary.loc[row[0], 6]
+                summary.loc[row[0], 'jc_side2_position'] = summary.loc[row[0], 7]
             #check each column
             col_index = 6
             while col_index < 50:
@@ -120,22 +125,23 @@ class ComparePolymorphisms:
                 summary.loc[row[0], 'reject'] = 'NA'
             print(line_name + str(row[0]) + ' done.')
         summary.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_ids', 3: 'ref_genome', 4:'position'}, inplace=True)
-        summary_subset = summary[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 'item_id', 'evidence_ids', 'ref_genome', 'position']].copy()
+        summary_subset = summary[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 
+                                  'item_id', 'evidence_ids', 'ref_genome', 'position', 'jc_side2_ref_genome', 'jc_side2_position']].copy()
         summary_subset.to_csv(output_path + line_name + 'summary_df_subset.csv', index=False)
         return summary_subset
 
-    def write_frequency_dicts_to_file(self, dictionary, filename_prefix):
+    def write_html_frequency_dicts_to_file(self, dictionary, filename_prefix):
         '''
         Input1: dictionary of suspect frequencies (i.e., output from get_suspect_frequencies() or get_reject_reasons().)
         Input2: string prefix for output file name, to identify evolution line etc.
-        Output: tab-separated text file of Input1 content.
+        Output: comma-separated text file of Input1 content.
         '''
-        print('Writing to ' + filename_prefix + '_frequencies.tsv ...')
-        with open(filename_prefix + '_frequencies.tsv', 'w') as output_file:
-            output_file.write('ref_genome\tposition\tmutation\tfreq_anc\tfreq_100\tfreq_300\tfreq_500\tfreq_780\tfreq_1000\n')
+        print('Writing to ' + filename_prefix + '_frequencies.csv ...')
+        with open(filename_prefix + '_frequencies.csv', 'w') as output_file:
+            output_file.write('ref_genome,position,mutation,html_freq_anc,html_freq_100,html_freq_300,html_freq_500,html_freq_780,html_freq_1000\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' 
-                                  + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\n')
+                output_file.write(str(key[0]) + ',' + str(key[1]) + ',' + str(value[0]) + ',' + str(value[1]) + ',' + str(value[2]) + ',' 
+                                  + str(value[3]) + ',' + str(value[4]) + ',' + str(value[5]) + ',' + str(value[6]) + '\n')
         print('Done')
         return
             
@@ -146,7 +152,8 @@ class ComparePolymorphisms:
                 (summary_df_subset['entry_type'] == 'UN')]
         rejected_evidence_dict = {}
         for key, value in suspect_frequencies_dict.items():
-            row_indices = summary_df_subset_evidence[(summary_df_subset_evidence['ref_genome'] == key[0]) & (summary_df_subset_evidence['position'] == key[1])].index.tolist()
+            row_indices = summary_df_subset_evidence[((key[0] == summary_df_subset_evidence['ref_genome']) | (key[0] == summary_df_subset_evidence['jc_side2_ref_genome'])) & 
+                                                     ((key[1] == summary_df_subset_evidence['position']) | (key[1] == summary_df_subset_evidence['jc_side2_position']))].index.tolist()
             for row in row_indices:
                 evolution_line = summary_df_subset_evidence.loc[row, 'line']
                 generation = summary_df_subset_evidence.loc[row, 'generation']
@@ -157,10 +164,10 @@ class ComparePolymorphisms:
         return rejected_evidence_dict
     
     def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
-        print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
-        with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
-            output_file.write('ref_genome\tposition\tline\tgeneration\treject_reason\tevidence_type\n')
+        print('Writing to ' + filename_prefix + '_rejected_evidence.csv ...')
+        with open(filename_prefix + '_rejected_evidence.csv', 'w') as output_file:
+            output_file.write('ref_genome,position,line,generation,frequency,reject_reason,evidence_type\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\n')
+                output_file.write(str(key[0]) + ',' + str(key[1]) + ',' + str(value[0]) + ',' + str(value[1]) + ',' + str(value[2]) + ',' + str(value[3]) + ',' + str(value[4]) + '\n')
         print('Done')
         return
