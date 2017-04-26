@@ -136,8 +136,8 @@ class ComparePolymorphisms:
         Input2: string prefix for output file name, to identify evolution line etc.
         Output: comma-separated text file of Input1 content.
         '''
-        print('Writing to ' + filename_prefix + '_frequencies.csv ...')
-        with open(filename_prefix + '_frequencies.csv', 'w') as output_file:
+        print('Writing to ' + filename_prefix + '_frequencies.tsv ...')
+        with open(filename_prefix + '_frequencies.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tmutation\thtml_freq_anc\thtml_freq_100\thtml_freq_300\thtml_freq_500\thtml_freq_780\thtml_freq_1000\n')
             for key, value in dictionary.items():
                 output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' 
@@ -164,8 +164,8 @@ class ComparePolymorphisms:
         return rejected_evidence_dict
     
     def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
-        print('Writing to ' + filename_prefix + '_rejected_evidence.csv ...')
-        with open(filename_prefix + '_rejected_evidence.csv', 'w') as output_file:
+        print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
+        with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tline\tgeneration\tfrequency\treject_reason\tevidence_type\n')
             for key, value in dictionary.items():
                 output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\n')
