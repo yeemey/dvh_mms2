@@ -127,7 +127,7 @@ class ComparePolymorphisms:
         summary.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_ids', 3: 'ref_genome', 4:'position'}, inplace=True)
         summary_subset = summary[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 
                                   'item_id', 'evidence_ids', 'ref_genome', 'position', 'jc_side2_ref_genome', 'jc_side2_position']].copy()
-        summary_subset.to_csv(output_path + line_name + 'summary_df_subset.csv', index=False)
+        summary_subset.to_csv(output_path + line_name + 'summary_df_subset.tsv', index=False, sep='\t')
         return summary_subset
 
     def write_html_frequency_dicts_to_file(self, dictionary, filename_prefix):
@@ -138,10 +138,10 @@ class ComparePolymorphisms:
         '''
         print('Writing to ' + filename_prefix + '_frequencies.csv ...')
         with open(filename_prefix + '_frequencies.csv', 'w') as output_file:
-            output_file.write('ref_genome,position,mutation,html_freq_anc,html_freq_100,html_freq_300,html_freq_500,html_freq_780,html_freq_1000\n')
+            output_file.write('ref_genome\tposition\tmutation\thtml_freq_anc\thtml_freq_100\thtml_freq_300\thtml_freq_500\thtml_freq_780\thtml_freq_1000\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + ',' + str(key[1]) + ',' + str(value[0]) + ',' + str(value[1]) + ',' + str(value[2]) + ',' 
-                                  + str(value[3]) + ',' + str(value[4]) + ',' + str(value[5]) + ',' + str(value[6]) + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' 
+                                  + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\n')
         print('Done')
         return
             
@@ -166,8 +166,8 @@ class ComparePolymorphisms:
     def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
         print('Writing to ' + filename_prefix + '_rejected_evidence.csv ...')
         with open(filename_prefix + '_rejected_evidence.csv', 'w') as output_file:
-            output_file.write('ref_genome,position,line,generation,frequency,reject_reason,evidence_type\n')
+            output_file.write('ref_genome\tposition\tline\tgeneration\tfrequency\treject_reason\tevidence_type\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + ',' + str(key[1]) + ',' + str(value[0]) + ',' + str(value[1]) + ',' + str(value[2]) + ',' + str(value[3]) + ',' + str(value[4]) + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\n')
         print('Done')
         return
