@@ -38,10 +38,7 @@ for file in compare_files:
         all_dataframes.append(dataframe)
     print(all_dataframes)
     evolution_line_dataframe = cp.summary_df(evolution_line, all_dataframes, output_directory)
-    #find reasons polymorphisms with 0% frequencies may have been rejected
-    new_suspect_freqs_dict = cp.get_reject_reasons(evolution_line_dataframe, suspect_freqs_dict)
     cp.write_frequency_dicts_to_file(suspect_freqs_dict, output_directory + evolution_line + '_suspect')
-    cp.write_frequency_dicts_to_file(new_suspect_freqs_dict, output_directory + evolution_line + '_suspect_reasons')
     #find rejected evidence for polymorphisms with 0% frequencies
-    evidence_dict = cp.get_rejected_evidence(evolution_line_dataframe, suspect_freqs_dict)
-    cp.write_evidence_dicts_to_file(evidence_dict, output_directory + evolution_line)
+    evidence_dict = cp.get_rejected_polymorphisms(evolution_line_dataframe, suspect_freqs_dict)
+    cp.write_rejected_dicts_to_file(evidence_dict, output_directory + evolution_line)

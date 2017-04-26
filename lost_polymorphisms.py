@@ -124,41 +124,6 @@ class ComparePolymorphisms:
         summary_subset.to_csv(output_path + line_name + 'summary_df_subset.csv', index=False)
         return summary_subset
 
-    def get_reject_reasons(self, summary_df_subset, suspect_frequencies_dict):
-        '''
-        Input1: data frame of all generations of one evolution line with pertinent data (i.e., output from summary_df() method.)
-        Input2: dictionary of all suspect frequencies (i.e., output from get_suspect_frequencies() method.)
-        Output: modified Input2 with reasons for suspect frequencies looked up from Input1, if available.
-        '''
-        print('Cross-checking summary data frame and suspect frequencies ...')
-        summary_df_subset_mutations = summary_df_subset[(summary_df_subset['entry_type'] == 'SNP') | 
-                (summary_df_subset['entry_type'] == 'SUB') | 
-                (summary_df_subset['entry_type'] == 'DEL') | 
-                (summary_df_subset['entry_type'] == 'INS') | 
-                (summary_df_subset['entry_type'] == 'MOB') | 
-                (summary_df_subset['entry_type'] == 'AMP') | 
-                (summary_df_subset['entry_type'] == 'CON') | 
-                (summary_df_subset['entry_type'] == 'INV')]
-        for key, value in suspect_frequencies_dict.items():
-            row_indices = summary_df_subset_mutations[(summary_df_subset_mutations['ref_genome'] == key[0]) & 
-                                                      (summary_df_subset_mutations['position'] == key[1])].index.tolist()
-            for row in row_indices:
-                reject_reason = summary_df_subset_mutations.loc[row, 'reject']
-                generation = summary_df_subset_mutations.loc[row, 'generation']
-                entry_type = summary_df_subset_mutations.loc[row, 'entry_type']
-                if reject_reason != '':
-                    if generation == 100:
-                        value[2] = str(value[2]) + ' ' + reject_reason
-                    elif generation == 300:
-                        value[3] = str(value[3]) + ' ' + reject_reason
-                    elif generation == 500:
-                        value[4] = str(value[4]) + ' ' + reject_reason
-                    elif generation == 780:
-                        value[5] = str(value[5]) + ' ' + reject_reason
-                    elif generation == 1000:
-                        value[6] = str(value[6]) + ' ' + reject_reason
-        return suspect_frequencies_dict
-    
     def write_frequency_dicts_to_file(self, dictionary, filename_prefix):
         '''
         Input1: dictionary of suspect frequencies (i.e., output from get_suspect_frequencies() or get_reject_reasons().)
@@ -174,7 +139,7 @@ class ComparePolymorphisms:
         print('Done')
         return
             
-    def get_rejected_evidence(self, summary_df_subset, suspect_frequencies_dict):
+    def get_rejected_polymorphisms(self, summary_df_subset, suspect_frequencies_dict):
         summary_df_subset_evidence = summary_df_subset[(summary_df_subset['entry_type'] == 'RA') |
                 (summary_df_subset['entry_type'] == 'MC') | 
                 (summary_df_subset['entry_type'] == 'JC') | 
@@ -185,16 +150,17 @@ class ComparePolymorphisms:
             for row in row_indices:
                 evolution_line = summary_df_subset_evidence.loc[row, 'line']
                 generation = summary_df_subset_evidence.loc[row, 'generation']
+                gd_frequency = summary_df_subset_evidence.loc[row, 'frequency']
                 reject_reason = summary_df_subset_evidence.loc[row, 'reject']
                 evidence_type = summary_df_subset_evidence.loc[row, 'entry_type']
-                rejected_evidence_dict[key] = [evolution_line, generation, reject_reason, evidence_type]
+                rejected_evidence_dict[key] = [evolution_line, generation, gd_frequency, reject_reason, evidence_type]
         return rejected_evidence_dict
     
-    def write_evidence_dicts_to_file(self, dictionary, filename_prefix):
+    def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
         print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
         with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tline\tgeneration\treject_reason\tevidence_type\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\n')
         print('Done')
         return
