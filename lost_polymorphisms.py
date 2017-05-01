@@ -152,6 +152,7 @@ class ComparePolymorphisms:
                 (summary_df_subset['entry_type'] == 'UN')]
         rejected_evidence_dict = {}
         for key, value in suspect_frequencies_dict.items():
+            print(key, value)
             row_indices = summary_df_subset_evidence[((key[0] == summary_df_subset_evidence['ref_genome']) | (key[0] == summary_df_subset_evidence['jc_side2_ref_genome'])) & 
                                                      ((key[1] == summary_df_subset_evidence['position']) | (key[1] == summary_df_subset_evidence['jc_side2_position']))].index.tolist()
             for row in row_indices:
@@ -160,14 +161,19 @@ class ComparePolymorphisms:
                 gd_frequency = summary_df_subset_evidence.loc[row, 'frequency']
                 reject_reason = summary_df_subset_evidence.loc[row, 'reject']
                 evidence_type = summary_df_subset_evidence.loc[row, 'entry_type']
-                rejected_evidence_dict[key] = [evolution_line, generation, gd_frequency, reject_reason, evidence_type]
+                item_id = summary_df_subset_evidence.loc[row, 'item_id']
+                new_key = list(key)
+                new_key.append(item_id)
+                new_key = tuple(new_key)
+                rejected_evidence_dict[new_key] = [evolution_line, generation, gd_frequency, reject_reason, evidence_type]
         return rejected_evidence_dict
     
     def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
         print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
         with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
-            output_file.write('ref_genome\tposition\tline\tgeneration\tfrequency\treject_reason\tevidence_type\n')
+            output_file.write('ref_genome\tposition\tline\tgeneration\tfrequency\treject_reason\tevidence_type\titem_id\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + 
+                                  str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(key[2]) + '\n')
         print('Done')
         return
