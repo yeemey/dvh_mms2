@@ -181,10 +181,10 @@ class ComparePolymorphisms:
         '''
         print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
         with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
-            output_file.write('ref_genome\tposition\tline\tgeneration\tfrequency\treject_reason\tevidence_type\titem_id\n')
+            output_file.write('ref_genome\tposition\tmutation\tline\tgeneration\tfrequency\treject_reason\tevidence_type\titem_id\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + 
-                                  str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(key[2]) + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(key[2]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + 
+                                  str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(key[3]) + '\n')
         print('Done')
         return
     
