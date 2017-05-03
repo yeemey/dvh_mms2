@@ -25,8 +25,8 @@ class ComparePolymorphisms:
         '''
         Input: compare html object parsed by BeautifulSoup
         Output: dictionary of mutation frequencies across generations
-        Key: (reference genome ID, position of mutation)
-        Value: [mutation, ancestor frequency, generation 100 f, gen 300 f, gen 500 f, gen 780 f, gen 1000 f]
+        Key: (reference genome ID, position of mutation, mutation)
+        Value: [ancestor frequency, generation 100 f, gen 300 f, gen 500 f, gen 780 f, gen 1000 f]
         '''
         table_cells = data_html_object.body.find_all('td')
         generation_frequencies_dict = {}
@@ -34,15 +34,15 @@ class ComparePolymorphisms:
             if re.match('NC_', str(cell.string)):
                 position = cell.next_sibling.next_sibling.next_sibling
                 clean_position = int(re.sub(',', '', position.string))
-                gen_freqs_key = (cell.string, clean_position)
                 mutation = position.next_sibling.next_sibling.next_sibling
+                gen_freqs_key = (cell.string, clean_position, mutation.string)
                 freq_ancestor = mutation.next_sibling.next_sibling.next_sibling
                 freq_gen100 = freq_ancestor.next_sibling
                 freq_gen300 = freq_gen100.next_sibling
                 freq_gen500 = freq_gen300.next_sibling
                 freq_gen780 = freq_gen500.next_sibling
                 freq_gen1000 = freq_gen780.next_sibling
-                gen_freqs_value = [mutation.string, freq_ancestor.string, freq_gen100.string, freq_gen300.string, freq_gen500.string, freq_gen780.string, freq_gen1000.string]
+                gen_freqs_value = [freq_ancestor.string, freq_gen100.string, freq_gen300.string, freq_gen500.string, freq_gen780.string, freq_gen1000.string]
                 generation_frequencies_dict[gen_freqs_key] = gen_freqs_value
         return generation_frequencies_dict
 
@@ -50,8 +50,8 @@ class ComparePolymorphisms:
         '''
         Input: dictionary of mutation frequencies from get_generation_frequencies()
         Output: dictionary subset of input, only containing values with frequency patterns '100% - 0% - 100%'.
-        Key: (reference genome ID, position of mutation)
-        Value: [mutation, ancestor frequency, generation 100 f, gen 300 f, gen 500 f, gen 780 f, gen 1000 f]
+        Key: (reference genome ID, position of mutation, mutation)
+        Value: [ancestor frequency, generation 100 f, gen 300 f, gen 500 f, gen 780 f, gen 1000 f]
         '''
         suspect_frequencies_dict = {}
         for key, value in generation_frequencies_dict.items():
@@ -132,20 +132,25 @@ class ComparePolymorphisms:
 
     def write_html_frequency_dicts_to_file(self, dictionary, filename_prefix):
         '''
-        Input1: dictionary of suspect frequencies (i.e., output from get_suspect_frequencies() or get_reject_reasons().)
+        Input1: dictionary of suspect frequencies i.e., output from get_suspect_frequencies().
         Input2: string prefix for output file name, to identify evolution line etc.
-        Output: comma-separated text file of Input1 content.
+        Output: tab-separated text file of Input1 content.
         '''
         print('Writing to ' + filename_prefix + '_frequencies.tsv ...')
         with open(filename_prefix + '_frequencies.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tmutation\thtml_freq_anc\thtml_freq_100\thtml_freq_300\thtml_freq_500\thtml_freq_780\thtml_freq_1000\n')
             for key, value in dictionary.items():
-                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' 
-                                  + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\n')
+                output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(key[2]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' 
+                                  + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\n')
         print('Done')
         return
             
     def get_rejected_polymorphisms(self, summary_df_subset, suspect_frequencies_dict):
+        '''
+        Input 1: data frame, summary of annotated.gd
+        Input 2: dictionary of suspect frequencies from COMPARE html file
+        Output: dictionary of evidence for polymorphisms
+        '''
         summary_df_subset_evidence = summary_df_subset[(summary_df_subset['entry_type'] == 'RA') |
                 (summary_df_subset['entry_type'] == 'MC') | 
                 (summary_df_subset['entry_type'] == 'JC') | 
@@ -169,6 +174,11 @@ class ComparePolymorphisms:
         return rejected_evidence_dict
     
     def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
+        '''
+        Input1: dictionary of evidence, i.e. output from get_reject_reasons().
+        Input2: string prefix for output file name, to identify evolution line etc.
+        Output: tab-separated text file of Input1 content.
+        '''
         print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
         with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tline\tgeneration\tfrequency\treject_reason\tevidence_type\titem_id\n')
@@ -177,3 +187,6 @@ class ComparePolymorphisms:
                                   str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(key[2]) + '\n')
         print('Done')
         return
+    
+    def get_frequency_discrepancies(self, suspect_frequencies_dict, rejected_evidence_dict):
+        pass
