@@ -64,6 +64,11 @@ class ComparePolymorphisms:
                     elif value[counter] == '100%':
                         if value[counter - 1] == None or value[counter + 1] == None:
                             suspect_frequencies_dict[key] = value
+                elif counter + 1 > len(value):
+                    if value[counter] == None and value[counter - 1] == '100%':
+                        suspect_frequencies_dict[key] = value
+                    elif value[counter] == '100%' and value[counter - 1] == None:
+                        suspect_frequencies_dict[key] = value                        
                 counter += 2
         return suspect_frequencies_dict
 
