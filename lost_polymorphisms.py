@@ -55,7 +55,7 @@ class ComparePolymorphisms:
         '''
         suspect_frequencies_dict = {}
         for key, value in generation_frequencies_dict.items():
-            counter = 2
+            counter = 1
             while counter <= len(value):
                 if counter + 1 < len(value):
                     if value[counter] == None:
@@ -187,6 +187,3 @@ class ComparePolymorphisms:
                                   str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(key[3]) + '\n')
         print('Done')
         return
-    
-    def get_frequency_discrepancies(self, suspect_frequencies_dict, rejected_evidence_dict):
-        pass
