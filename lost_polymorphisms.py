@@ -92,11 +92,14 @@ class ComparePolymorphisms:
         summary = pd.concat(all_df_from_gd, ignore_index=True)
         summary.insert(0, 'line', line_name)
         summary.insert(2, 'frequency', 0.0)
-        summary.insert(3, 'gene_product', '')
-        summary.insert(4, 'gene_position', '')
-        summary.insert(5, 'reject', '')
-        summary.insert(6, 'jc_side2_ref_genome', '')
-        summary.insert(7, 'jc_side2_position', '')
+        summary.insert(3, 'polymorphism_frequency', 0.0)
+        summary.insert(4, 'new_cov', '')
+        summary.insert(5, 'total_cov', '')
+        summary.insert(6, 'gene_product', '')
+        summary.insert(7, 'gene_position', '')
+        summary.insert(8, 'reject', '')
+        summary.insert(9, 'jc_side2_ref_genome', '')
+        summary.insert(10, 'jc_side2_position', '')
         print('Creating summary data frame for ' + line_name)
         for row in summary.itertuples():
             if summary.loc[row[0], 0] == 'JC':
@@ -104,10 +107,12 @@ class ComparePolymorphisms:
                 summary.loc[row[0], 'jc_side2_position'] = summary.loc[row[0], 7]
             #check each column
             col_index = 6
-            while col_index < 50:
+            while col_index < 55:
                 #1. polymorphism frequencies
                 if re.match('frequency=', str(summary.loc[row[0], col_index])):
                     summary.loc[row[0], 'frequency'] = re.sub('frequency=', '', str(summary.loc[row[0], col_index]))
+                elif re.match('polymorphism_frequency=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'polymorphism_frequency'] = re.sub('polymorphism_frequency=', '', str(summary.loc[row[0], col_index]))
                 #2. gene products
                 elif re.match('gene_product=', str(summary.loc[row[0], col_index])):
                     summary.loc[row[0], 'gene_product'] = re.sub('gene_product=', '', str(summary.loc[row[0], col_index]))
@@ -117,12 +122,23 @@ class ComparePolymorphisms:
                 #4. gene annotations
                 elif re.match('gene_position=', str(summary.loc[row[0], col_index])):
                     summary.loc[row[0], 'gene_position'] = re.sub('gene_position=', '', str(summary.loc[row[0], col_index]))
+                #5. new coverage
+                elif re.match('new_cov=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'new_cov'] = re.sub('new_cov=', '', str(summary.loc[row[0], col_index]))
+                #6. total coverage
+                elif re.match('total_cov=', str(summary.loc[row[0], col_index])):
+                    summary.loc[row[0], 'total_cov'] = re.sub('total_cov=', '', str(summary.loc[row[0], col_index]))
                 col_index += 1
             #set frequencies type to float
             if re.match('1|2|3|4|5|6|7|8|9', str(summary.loc[row[0], 'frequency'])):
                 summary.loc[row[0], 'frequency'] = float(summary.loc[row[0], 'frequency'])
             else:
                 summary.loc[row[0], 'frequency'] = 0.0
+            #set polymorphism_frequencies type to float
+            if re.match('1|2|3|4|5|6|7|8|9', str(summary.loc[row[0], 'polymorphism_frequency'])):
+                summary.loc[row[0], 'polymorphism_frequency'] = float(summary.loc[row[0], 'polymorphism_frequency'])
+            else:
+                summary.loc[row[0], 'polymorphism_frequency'] = 0.0
             #set positions (col 4) type to int
             summary.loc[row[0], 4] = int(summary.loc[row[0], 4])
             #set reject col to 'NA' when no reject reason given because row represents evidence, not polymorphism.
@@ -130,8 +146,8 @@ class ComparePolymorphisms:
                 summary.loc[row[0], 'reject'] = 'NA'
             print(line_name + str(row[0]) + ' done.')
         summary.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_ids', 3: 'ref_genome', 4:'position'}, inplace=True)
-        summary_subset = summary[['line', 'generation', 'frequency', 'gene_product', 'gene_position', 'reject', 'entry_type', 
-                                  'item_id', 'evidence_ids', 'ref_genome', 'position', 'jc_side2_ref_genome', 'jc_side2_position']].copy()
+        summary_subset = summary[['line', 'generation', 'frequency', 'polymorphism_frequency', 'new_cov', 'total_cov', 'gene_product', 'gene_position', 
+                                  'reject', 'entry_type', 'item_id', 'evidence_ids', 'ref_genome', 'position', 'jc_side2_ref_genome', 'jc_side2_position']].copy()
         summary_subset.to_csv(output_path + line_name + 'summary_df_subset.tsv', index=False, sep='\t')
         return summary_subset
 
