@@ -185,13 +185,16 @@ class ComparePolymorphisms:
                 evolution_line = summary_df_subset_evidence.loc[row, 'line']
                 generation = summary_df_subset_evidence.loc[row, 'generation']
                 gd_frequency = summary_df_subset_evidence.loc[row, 'frequency']
+                gd_polymorphism_frequency = summary_df_subset_evidence.loc[row, 'polymorphism_frequency']
+                new_cov = summary_df_subset_evidence.loc[row, 'new_cov']
+                total_cov = summary_df_subset_evidence.loc[row, 'total_cov']
                 reject_reason = summary_df_subset_evidence.loc[row, 'reject']
                 evidence_type = summary_df_subset_evidence.loc[row, 'entry_type']
                 item_id = summary_df_subset_evidence.loc[row, 'item_id']
                 new_key = list(key)
                 new_key.append(item_id)
                 new_key = tuple(new_key)
-                rejected_evidence_dict[new_key] = [evolution_line, generation, gd_frequency, reject_reason, evidence_type]
+                rejected_evidence_dict[new_key] = [evolution_line, generation, gd_frequency, gd_polymorphism_frequency, new_cov, total_cov, reject_reason, evidence_type]
         return rejected_evidence_dict
     
     def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
@@ -202,9 +205,9 @@ class ComparePolymorphisms:
         '''
         print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
         with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
-            output_file.write('ref_genome\tposition\tmutation\tline\tgeneration\tfrequency\treject_reason\tevidence_type\titem_id\n')
+            output_file.write('ref_genome\tposition\tmutation\tline\tgeneration\tfrequency\tpolymorphism_frequency\tnew_cov\ttotal_cov\treject_reason\tevidence_type\titem_id\n')
             for key, value in dictionary.items():
                 output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(key[2]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + 
-                                  str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(key[3]) + '\n')
+                                  str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\t' + str(value[7]) + '\t' + str(key[3]) + '\n')
         print('Done')
         return
