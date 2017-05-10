@@ -107,7 +107,7 @@ class ComparePolymorphisms:
                 summary.loc[row[0], 'jc_side2_position'] = summary.loc[row[0], 7]
             #check each column
             col_index = 6
-            while col_index < 55:
+            while col_index < 50:
                 #1. polymorphism frequencies
                 if re.match('frequency=', str(summary.loc[row[0], col_index])):
                     summary.loc[row[0], 'frequency'] = re.sub('frequency=', '', str(summary.loc[row[0], col_index]))
