@@ -36,5 +36,5 @@ print(all_dataframes)
 evolution_line_dataframe = cp.summary_df(evolution_line, all_dataframes, output_directory)
 cp.write_html_frequency_dicts_to_file(suspect_freqs_dict, output_directory + evolution_line + '_suspect')
 #find rejected evidence for polymorphisms with 0% frequencies
-evidence_dict = cp.get_rejected_polymorphisms(evolution_line_dataframe, suspect_freqs_dict)
-cp.write_rejected_dicts_to_file(evidence_dict, output_directory + evolution_line)
+evidence_dict = cp.get_polymorphism_evidence(evolution_line_dataframe, suspect_freqs_dict)
+cp.write_evidence_dicts_to_file(evidence_dict, output_directory + evolution_line)
