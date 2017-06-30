@@ -153,7 +153,7 @@ class ComparePolymorphisms:
 
     def write_html_frequency_dicts_to_file(self, dictionary, filename_prefix):
         '''
-        Input1: dictionary of suspect frequencies i.e., output from get_suspect_frequencies().
+        Input1: dictionary of frequencies i.e., output from get_suspect_frequencies() or get_html_generation_frequencies().
         Input2: string prefix for output file name, to identify evolution line etc.
         Output: tab-separated text file of Input1 content.
         '''
@@ -166,18 +166,18 @@ class ComparePolymorphisms:
         print('Done')
         return
             
-    def get_rejected_polymorphisms(self, summary_df_subset, suspect_frequencies_dict):
+    def get_polymorphism_evidence(self, summary_df_subset, frequencies_dict):
         '''
         Input 1: data frame, summary of annotated.gd
-        Input 2: dictionary of suspect frequencies from COMPARE html file
+        Input 2: dictionary of frequencies from COMPARE html file
         Output: dictionary of evidence for polymorphisms
         '''
         summary_df_subset_evidence = summary_df_subset[(summary_df_subset['entry_type'] == 'RA') |
                 (summary_df_subset['entry_type'] == 'MC') | 
                 (summary_df_subset['entry_type'] == 'JC') | 
                 (summary_df_subset['entry_type'] == 'UN')]
-        rejected_evidence_dict = {}
-        for key, value in suspect_frequencies_dict.items():
+        evidence_dict = {}
+        for key, value in frequencies_dict.items():
             print(key, value)
             row_indices = summary_df_subset_evidence[((key[0] == summary_df_subset_evidence['ref_genome']) | (key[0] == summary_df_subset_evidence['jc_side2_ref_genome'])) & 
                                                      ((key[1] == summary_df_subset_evidence['position']) | (key[1] == summary_df_subset_evidence['jc_side2_position']))].index.tolist()
@@ -194,17 +194,17 @@ class ComparePolymorphisms:
                 new_key = list(key)
                 new_key.append(item_id)
                 new_key = tuple(new_key)
-                rejected_evidence_dict[new_key] = [evolution_line, generation, gd_frequency, gd_polymorphism_frequency, new_cov, total_cov, reject_reason, evidence_type]
-        return rejected_evidence_dict
+                evidence_dict[new_key] = [evolution_line, generation, gd_frequency, gd_polymorphism_frequency, new_cov, total_cov, reject_reason, evidence_type]
+        return evidence_dict
     
-    def write_rejected_dicts_to_file(self, dictionary, filename_prefix):
+    def write_evidence_dicts_to_file(self, dictionary, filename_prefix):
         '''
-        Input1: dictionary of evidence, i.e. output from get_reject_reasons().
+        Input1: dictionary of evidence, i.e. output from get_polymorphism_evidence().
         Input2: string prefix for output file name, to identify evolution line etc.
         Output: tab-separated text file of Input1 content.
         '''
-        print('Writing to ' + filename_prefix + '_rejected_evidence.tsv ...')
-        with open(filename_prefix + '_rejected_evidence.tsv', 'w') as output_file:
+        print('Writing to ' + filename_prefix + '_evidence.tsv ...')
+        with open(filename_prefix + '_evidence.tsv', 'w') as output_file:
             output_file.write('ref_genome\tposition\tmutation\tline\tgeneration\tfrequency\tpolymorphism_frequency\tnew_cov\ttotal_cov\treject_reason\tevidence_type\titem_id\n')
             for key, value in dictionary.items():
                 output_file.write(str(key[0]) + '\t' + str(key[1]) + '\t' + str(key[2]) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + 

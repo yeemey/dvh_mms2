@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Apr 26 15:20:33 2017
+Created on Mon May 22 11:22:47 2017
 
 @author: ymseah
 """
@@ -22,7 +22,6 @@ ancestor_df = cp.annotated_gd_to_df(input_directory + 'sic_Ancestor_breseq/outpu
 
 bs_from_html = cp.parse_compare_html(compare_input)
 mutation_freqs_dict = cp.get_html_generation_frequencies(bs_from_html)
-suspect_freqs_dict = cp.get_suspect_html_frequencies(mutation_freqs_dict)
 annotated_gd_files = glob.glob(input_directory + 'sic_' + evolution_line + '*/output/*.gd')
 print(annotated_gd_files)
 all_dataframes = [ancestor_df]
@@ -34,7 +33,6 @@ for genome_diff in annotated_gd_files:
     all_dataframes.append(dataframe)
 print(all_dataframes)
 evolution_line_dataframe = cp.summary_df(evolution_line, all_dataframes, output_directory)
-cp.write_html_frequency_dicts_to_file(suspect_freqs_dict, output_directory + evolution_line + '_suspect')
-#find rejected evidence for polymorphisms with 0% frequencies
-evidence_dict = cp.get_polymorphism_evidence(evolution_line_dataframe, suspect_freqs_dict)
+cp.write_html_frequency_dicts_to_file(mutation_freqs_dict, output_directory + evolution_line)
+evidence_dict = cp.get_polymorphism_evidence(evolution_line_dataframe, mutation_freqs_dict)
 cp.write_evidence_dicts_to_file(evidence_dict, output_directory + evolution_line)
