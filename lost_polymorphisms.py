@@ -221,10 +221,10 @@ class ComparePolymorphisms:
         all_freqs_by_generation = []
         for key, value in generation_freqs_dict.items():
             if key[0] == ref_genome_id:
-                row = list(key[1:])
-                complete_row = row + value
-                complete_row[:] = [0.0 if x == 'None' or x == '?' or x == 'Δ' else x for x in complete_row]
-                complete_row[:] = [float(x[:-1]) if re.search('%', str(x)) else x for x in complete_row]
+                first_two_row_elements = list(key[1:])
+                frequencies = [0.0 if x == 'None' or x == '?' or x == 'Δ' else x for x in value]
+                frequencies[:] = [x[:-1] if re.search('%', str(x)) else x for x in frequencies]
+                complete_row = first_two_row_elements + frequencies
                 generation_dict = {2: 0, 3: 100, 4: 300, 5: 500, 6: 780, 7: 1000}
                 for item in enumerate(complete_row):
                     if item[0] in list(generation_dict.keys()):
