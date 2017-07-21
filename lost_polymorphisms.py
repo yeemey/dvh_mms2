@@ -81,8 +81,21 @@ class ComparePolymorphisms:
         df_from_gd = pd.read_table(filepath, comment='#', names=range(50), dtype=str)
         df_from_gd.insert(0, 'generation', generation)
         return df_from_gd
+    
+    def get_all_gd(self, evolution_line, input_directory, path_to_ancestor_gd):
+        ancestor_df = self.annotated_gd_to_df(path_to_ancestor_gd, 0)
+        annotated_gd_files = glob.glob(input_directory + 'sic_' + evolution_line + '*/output/*.gd')
+        all_dataframes = [ancestor_df]
+        for genome_diff in annotated_gd_files:
+            generation = int(genome_diff[-8:-3].split('-')[1])
+            dataframe = self.annotated_gd_to_df(genome_diff, generation)
+            all_dataframes.append(dataframe)
+        evolution_line_dataframe = pd.concat(all_dataframes, ignore_index=True)
+        evolution_line_dataframe.insert(0, 'line', evolution_line)
+        return evolution_line_dataframe
 
     def summary_df(self, line_name, all_df_from_gd, output_path):
+        # this function needs to be refactored since get_all_gd() overlaps with it.
         '''
         Input1: name of evolution line
         Input2: path to output folder
@@ -235,5 +248,6 @@ class ComparePolymorphisms:
         
         return df_html_frequencies_by_generation            
     
-    def clean_plot_gd_data(self):
+    def gd_frequencies_to_df(self, line_name, all_df_from_gd):
+        
         return
