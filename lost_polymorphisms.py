@@ -220,8 +220,7 @@ class ComparePolymorphisms:
         all_freqs_by_generation = []
         for key, value in generation_freqs_dict.items():
             first_three_row_elements = list(key[:])
-            frequencies = [0.0 if x == 'None' or x == '?' or x == 'Δ' else x for x in value]
-            frequencies[:] = [x[:-1] if re.search('%', str(x)) else x for x in frequencies]
+            frequencies = [x[:-1] if re.search('%', str(x)) else 0.0 for x in value]
             generation_dict = {0: 0, 1: 100, 2: 300, 3: 500, 4: 780, 5: 1000}
             for item in enumerate(frequencies):
                 generation_frequency = [generation_dict[item[0]], item[1]]
