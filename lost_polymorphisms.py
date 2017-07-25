@@ -92,11 +92,13 @@ class ComparePolymorphisms:
         '''
         ancestor_df = self.annotated_gd_to_df(path_to_ancestor_gd, 0)
         annotated_gd_files = glob.glob(input_directory + 'sic_' + evolution_line + '*/output/*.gd')
+        print(annotated_gd_files)
         all_dataframes = [ancestor_df]
         for genome_diff in annotated_gd_files:
             generation = int(genome_diff[-8:-3].split('-')[1])
             dataframe = self.annotated_gd_to_df(genome_diff, generation)
             all_dataframes.append(dataframe)
+        print(all_dataframes)
         evolution_line_dataframe = pd.concat(all_dataframes, ignore_index=True)
         evolution_line_dataframe.insert(0, 'line', evolution_line)
         return evolution_line_dataframe
@@ -274,6 +276,7 @@ class ComparePolymorphisms:
                     df_polymorphisms.loc[row[0], 'consensus_frequency'] = re.sub('frequency=', '', str(df_polymorphisms.loc[row[0], col_index]))
                 elif re.match('polymorphism_frequency=', str(summary.loc[row[0], col_index])):
                     df_polymorphisms.loc[row[0], 'polymorphism_frequency'] = re.sub('polymorphism_frequency=', '', str(df_polymorphisms.loc[row[0], col_index]))
+                col_index += 1
         df_polymorphisms_for_plotting = df_polymorphisms[['line', 'generation', 'entry_type', 'item_id', 'genome_id', 
                                                           'position', 'polymorphism_frequency', 'consensus_frequency']].copy()
         dtype = {'line': str, 'generation': int, 'entry_type': str, 'item_id': str, 'genome_id': str,
