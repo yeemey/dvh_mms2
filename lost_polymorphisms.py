@@ -91,7 +91,7 @@ class ComparePolymorphisms:
         Output: GD files for all generations of the evolution line, concatenated as one data frame.
         '''
         ancestor_df = self.annotated_gd_to_df(path_to_ancestor_gd, 0)
-        annotated_gd_files = glob.glob(input_directory + 'sic_' + evolution_line + '*/output/*.gd')
+        annotated_gd_files = glob.glob(input_directory + '*' + evolution_line + '*/output/*.gd')
         print(annotated_gd_files)
         all_dataframes = [ancestor_df]
         for genome_diff in annotated_gd_files:
