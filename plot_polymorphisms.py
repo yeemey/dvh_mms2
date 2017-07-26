@@ -12,6 +12,7 @@ import glob
 input_directory = '/opt/data/wkim-rsrch/breseq_results/'
 output_directory = '/home/NETID/ymseah/Projects/plot_polymorphisms/results/'
 ancestor_gd_path = input_directory + 'sic_Ancestor_breseq/output/0.gd'
+evolution_lines = ['HA3', 'HE3', 'HR2', 'HS3', 'UA3', 'UE3', 'UR1', 'US1']
 
 '''
 # frequencies from HTML output
@@ -32,5 +33,7 @@ for file in compare_files:
 
 # frequencies from GD output
 cp_gd = ComparePolymorphisms()
-HA3_df = cp_gd.get_all_gd('HA3', input_directory, ancestor_gd_path)
-HA3_frequencies = cp_gd.gd_frequencies_to_df(HA3_df, save_csv=True, csv_filename='HA3_gd_freqs.csv')
+for line in evolution_lines:
+    line_df = cp_gd.get_all_gd(line, input_directory, ancestor_gd_path)
+    output_csv = output_directory + line + '_gd_freqs.csv'
+    frequencies_df = cp_gd.gd_frequencies_to_df(line_df, save_csv=True, csv_filename=output_csv)
