@@ -79,7 +79,7 @@ class ComparePolymorphisms:
         Input2: generation sampled
         Output: annotated.gd as a data frame
         '''
-        df_from_gd = pd.read_table(filepath, comment='#', names=range(50), dtype=str)
+        df_from_gd = pd.read_table(filepath, comment='#', names=range(51), dtype=str)
         df_from_gd.insert(0, 'generation', generation)
         return df_from_gd
     
@@ -261,23 +261,29 @@ class ComparePolymorphisms:
         Input: output from get_all_gd(), i.e., data frame of combined gd files from one evolution line.
         Output: data frame of all polymorphisms with frequencies, for plotting.
         '''
-        df_from_all_gd.insert(2, 'polymorphism_frequency', 0.0)
-        df_from_all_gd.insert(3, 'consensus_frequency', 0.0)
-        df_from_all_gd.rename(columns = {0: 'entry_type', 1: 'item_id', 3: 'genome_id', 4: 'position'}, inplace=True)
+        df_from_all_gd.insert(2, 'consensus_frequency', 'NaN')
+        df_from_all_gd.insert(3, 'polymorphism_frequency', 0.0)
+        df_from_all_gd.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_id', 3: 'genome_id', 4: 'position'}, inplace=True)
         # entry types obtained from http://barricklab.org/twiki/pub/Lab/ToolsBacterialGenomeResequencing/documentation/gd_format.html
         df_polymorphisms = df_from_all_gd[(df_from_all_gd['entry_type'] == 'INS') | (df_from_all_gd['entry_type'] == 'DEL') | 
                 (df_from_all_gd['entry_type'] == 'SNP') | (df_from_all_gd['entry_type'] == 'SUB') | (df_from_all_gd['entry_type'] == 'MOB') | 
                 (df_from_all_gd['entry_type'] == 'AMP') | (df_from_all_gd['entry_type'] == 'CON') | (df_from_all_gd['entry_type'] == 'INV')].copy()
         for row in df_polymorphisms.itertuples():
-            col_index = 6
-            while col_index < 50:
-                if re.match('frequency=', str(df_polymorphisms.loc[row[0], col_index])):
-                    df_polymorphisms.loc[row[0], 'consensus_frequency'] = re.sub('frequency=', '', str(df_polymorphisms.loc[row[0], col_index]))
-                elif re.match('polymorphism_frequency=', str(df_polymorphisms.loc[row[0], col_index])):
-                    df_polymorphisms.loc[row[0], 'polymorphism_frequency'] = re.sub('polymorphism_frequency=', '', str(df_polymorphisms.loc[row[0], col_index]))
-                col_index += 1
-        df_polymorphisms_for_plotting = df_polymorphisms[['line', 'generation', 'entry_type', 'item_id', 'genome_id', 
-                                                          'position', 'polymorphism_frequency', 'consensus_frequency']].copy()
+            for col_index in range(6, 51):
+                if re.match('frequency', str(df_polymorphisms.loc[row[0], col_index])):
+                    df_polymorphisms.loc[row[0], 'polymorphism_frequency'] = re.sub('frequency=', '', str(df_polymorphisms.loc[row[0], col_index]))
+                    if df_polymorphisms.loc[row[0], 'polymorphism_frequency'] == '1':
+                        df_polymorphisms.loc[row[0], 'consensus_frequency'] = 1.0
+                        evidence_id = df_polymorphisms.loc[row[0], 'evidence_id']
+                        evidence_row = df_from_all_gd[df_from_all_gd['item_id'] == evidence_id].index
+                        for evidence_col in range(6, 51):
+                            if re.match('polymorphism_frequency', str(df_from_all_gd.loc[evidence_row, evidence_col])):
+                                df_polymorphisms.loc[row[0], 'polymorphism_frequency'] = re.sub('polymorphism_frequency=', '', str(df_from_all_gd.loc[evidence_row, evidence_col]))
+                            break
+                break
+                    
+        df_polymorphisms_for_plotting = df_polymorphisms[['line', 'generation', 'entry_type', 'item_id', 
+                                                          'genome_id', 'position', 'polymorphism_frequency', 'consensus_frequency']].copy()
         dtype = {'line': str, 'generation': int, 'entry_type': str, 'item_id': str, 'genome_id': str,
                  'position': str, 'polymorphism_frequency': float, 'consensus_frequency': float}
         for key, value in dtype.items():
