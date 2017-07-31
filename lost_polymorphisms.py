@@ -263,7 +263,7 @@ class ComparePolymorphisms:
         '''
         df_from_all_gd.insert(2, 'consensus_frequency', 'NaN')
         df_from_all_gd.insert(3, 'polymorphism_frequency', 0.0)
-        df_from_all_gd.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_id', 3: 'genome_id', 4: 'position'}, inplace=True)
+        df_from_all_gd.rename(columns = {0: 'entry_type', 1: 'item_id', 2: 'evidence_id', 3: 'genome_id', 4: 'position', 5: 'mutation_detail'}, inplace=True)
         # entry types obtained from http://barricklab.org/twiki/pub/Lab/ToolsBacterialGenomeResequencing/documentation/gd_format.html
         df_polymorphisms = df_from_all_gd[(df_from_all_gd['entry_type'] == 'INS') | (df_from_all_gd['entry_type'] == 'DEL') | 
                 (df_from_all_gd['entry_type'] == 'SNP') | (df_from_all_gd['entry_type'] == 'SUB') | (df_from_all_gd['entry_type'] == 'MOB') | 
@@ -282,7 +282,7 @@ class ComparePolymorphisms:
                             break
                 break
                     
-        df_polymorphisms_for_plotting = df_polymorphisms[['line', 'generation', 'entry_type', 'item_id', 
+        df_polymorphisms_for_plotting = df_polymorphisms[['line', 'generation', 'entry_type', 'item_id', 'mutation_detail',  
                                                           'genome_id', 'position', 'polymorphism_frequency', 'consensus_frequency']].copy()
         dtype = {'line': str, 'generation': int, 'entry_type': str, 'item_id': str, 'genome_id': str,
                  'position': str, 'polymorphism_frequency': float, 'consensus_frequency': float}
