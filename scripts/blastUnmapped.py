@@ -16,11 +16,11 @@ class run_software:
     
     def get_sample_name(self, fastq_file):
         """
-        Get sample names from fastq files that end in '1.fastq', '2.fastq', 
-        or '_sing.fastq'.
+        Get sample names from fastq files named '<sample_name>_*1*.fastq', 
+        or '<sample_name>_*2*.fastq'.
         """
-        if re.search('[1-2].fastq|_[1-2].fastq|_R[1-2].fastq|_sing.fastq', fastq_file):
-            sample_name_end_index = re.search('[1-2].fastq|_[1-2].fastq|_R[1-2].fastq|_sing.fastq|__sing.fastq|_R_sing.fastq', fastq_file).start()
+        if re.search('_[1-2].fastq|_R[1-2]_', fastq_file):
+            sample_name_end_index = re.search('_[1-2].fastq|_R[1-2]_', fastq_file).start()
             if re.search('/', fastq_file):
                 start_indices = [m.start() for m in re.finditer('/', fastq_file)]
                 start_indices.sort()
@@ -31,7 +31,7 @@ class run_software:
             return sample_name
         else:
             print(fastq_file)
-            print('Input file name must end in \'_1.fastq\', \'_2.fastq\', \'_R1.fastq\', or \'_R2.fastq\'.')
+            print('Input file name must be named \'<sample_name>_*1*.fastq\', or \'<sample_name>_*2*.fastq\'')
     
     def get_all_sample_names(self, sample_dir):
         sample_files = os.listdir(sample_dir)
