@@ -9,25 +9,30 @@ BioPython 1.68
 @author: ymseah
 """
 
-from blastUnmapped import run_software, parse_results
+from blastUnmapped_svr import run_software, parse_results
 import re, os, subprocess
 
-run_object = run_software()
-input_dir = '/home/NETID/ymseah/Projects/ngs_preprocess/20170619/results/'
-forward_read = 'sic_UA3_S2_L001_R1_001.fastq'
-reverse_read = 'sic_UA3_S2_L001_R2_001.fastq'
+'''
+sample names and directory paths
+'''
 sample_name = 'sic_UA3_S2_L001'
-output_dir = '/home/NETID/ymseah/Projects/ngs_preprocess/20170619/results/'
+forward_read = sample_name + '_R1_001.fastq'
+reverse_read = sample_name + '_R2_001.fastq'
+scy_sic_output = '/home/NETID/ymseah/Projects/20180307_adapters_2015/results/scy_sic/'
+pear_arg = '~/./pear'
+pear_output = '/home/NETID/ymseah/Projects/20180307_adapters_2015/results/pear/'
+breseq_arg = '~/breseq'
+ref_dir = ''
+breseq_output = '/home/NETID/ymseah/Projects/20180307_adapters_2015/results/breseq/'
+gdtools_arg = '~/gdtools'
 batch_reads_dir = '/opt/data/wkim-data/FilteredFastQC/'
-#print(run_object.get_all_pear_samples('/Users/ymseah/scriptingProjects/python/test/'))
-#run_object.batch_run_pear('/opt/data/wkim-data/FilteredFastQC/'', 
-#                          'home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/20161201/')
-#run_object.batch_run_breseq('/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/20161202/', 
-#                            '/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/breseq_results/')
-#run_object.run_breseq('/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/20161202/',
-#                      'sic_HE3.118','/home/NETID/ymseah/Projects/Low_Mapping_in_breseq/results/breseq_results/')
-#run_object.run_gdtools_compare('sic_HE3-15', 'sic_HE3.45', 'sic_HE3-76', 'sic_HE3-118')
-#run_object.run_blastn_remote('sic_HA3.45')
-run_object.run_pear(input_dir + forward_read, input_dir + reverse_read, output_dir, sample_name)
-run_object.run_breseq(input_dir, sample_name, output_dir)
 
+'''
+run 
+'''
+run_object = run_software()
+#print(run_object.get_all_pear_samples('/Users/ymseah/scriptingProjects/python/test/'))
+#run_object.batch_run_pear(pear_arg, batch_reads_dir, pear_output)
+#run_object.batch_run_breseq(breseq_arg, ref_dir, pear_output, breseq_output)
+run_object.run_pear(pear_arg, scy_sic_output + forward_read, scy_sic_output + reverse_read, pear_output, sample_name)
+run_object.run_breseq(breseq_arg, ref_dir, pear_output, sample_name, breseq_output)
