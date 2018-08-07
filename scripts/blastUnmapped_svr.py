@@ -16,11 +16,10 @@ class run_software:
     
     def get_sample_name(self, fastq_file):
         """
-        Get sample names from fastq files that end in '1.fastq', '2.fastq', 
-        or '_sing.fastq'.
+        Get sample names from fastq files that end in '1.fastq', '2.fastq''.
         """
-        if re.search('_[1-2].fastq|_[1-2].fastq|_R[1-2].fastq|_sing.fastq', fastq_file):
-            sample_name_end_index = re.search('[1-2].fastq|_[1-2].fastq|_R[1-2].fastq|_sing.fastq|__sing.fastq|_R_sing.fastq', fastq_file).start()
+        if re.search('_[1-2].fastq|_R[1-2].fastq|_L001_R[1-2]_001', fastq_file):
+            sample_name_end_index = re.search('_[1-2].fastq|_R[1-2].fastq|_L001_R[1-2]_001', fastq_file).start()
             if re.search('/', fastq_file):
                 start_indices = [m.start() for m in re.finditer('/', fastq_file)]
                 start_indices.sort()
@@ -29,9 +28,9 @@ class run_software:
                 sample_name_start_index = 0
             sample_name = fastq_file[sample_name_start_index:sample_name_end_index]
             return sample_name
-        else:
-            print(fastq_file)
-            print('Input file name must end in \'_1.fastq\', \'_2.fastq\', \'_R1.fastq\', or \'_R2.fastq\'.'')
+        #else:
+        #   print(fastq_file)
+        #   print('Input file name must end in \'_1.fastq\', \'_2.fastq\', \'_R1.fastq\', or \'_R2.fastq\'.')
     
     def get_all_sample_names(self, sample_dir):
         sample_files = os.listdir(sample_dir)
@@ -62,25 +61,27 @@ class run_software:
         sample_files.sort()
         print('Getting sample names from FASTQ file names...')
         all_names = self.get_all_sample_names(sample_dir)
+        print(all_names)
         fastq_f = []
         fastq_r = []
         for name in all_names:
-            if name + '1.fastq' in sample_files:
-                fastq_f.append(name + '1.fastq')
-            elif name + '_1.fastq' in sample_files:
+            if name + '_1.fastq' in sample_files:
                 fastq_f.append(name + '_1.fastq')
             elif name + '_R1.fastq' in sample_files:
                 fastq_f.append(name + '_R1.fastq')
+            elif name + '_L001_R1_001.fastq' in sample_files:
+                fastq_f.append(name + '_L001_R1_001.fastq')
         for name in all_names:
-            if name + '2.fastq' in sample_files:
-                fastq_r.append(name + '2.fastq')
-            elif name + '_2.fastq' in sample_files:
+            if name + '_2.fastq' in sample_files:
                 fastq_r.append(name + '_2.fastq')
             elif name + '_R2.fastq' in sample_files:
                 fastq_r.append(name + '_R2.fastq')
+            elif name + '_L001_R2_001.fastq' in sample_files:
+                fastq_r.append(name + '_L001_R2_001.fastq')
         
         fastq_f.sort()
         fastq_r.sort()
+        print(fastq_f, fastq_r)
         samples = list(all_names)
         samples.sort()
         
@@ -124,7 +125,7 @@ class run_software:
         reads2 = input_dir + sample_name + '.unassembled.forward.fastq'
         reads3 = input_dir + sample_name + '.unassembled.reverse.fastq'
         
-        args = [breseq_arg, ref_dir, '-p', '-o', breseq_dir, '-r', ref1, '-r', 
+        args = [breseq_arg, '-p', '-o', breseq_dir, '-r', ref1, '-r', 
                 ref2, '-r', ref3, '--polymorphism-minimum-coverage-each-strand', 
                 polymorphism_min, reads1, reads2, reads3]
         
@@ -141,11 +142,9 @@ class run_software:
         all_samples = list(self.get_all_pear_samples(pear_results_dir))
         for sample in all_samples:
             self.run_breseq(breseq_arg, ref_dir, pear_results_dir, sample, breseq_output_dir)
+        return
     
-    def run_gdtools_compare(self, gdtools_arg, *samples, breseq_dir, 
-                            ref_dir, ref_genome1 = 'dv.gbk', 
-                            ref_genome2 = 'mp.gbk', 
-                            ref_genome3 = 'megaplasma.gbk'):
+    def run_gdtools_compare(self, gdtools_arg, *samples, breseq_dir, ref_dir, ref_genome1 = 'dv.gbk', ref_genome2 = 'mp.gbk', ref_genome3 = 'megaplasma.gbk'):
         """
         Usage: gdtools COMPARE [-o annotated.html] -r reference.gbk input.1.gd [input.2.gd ... ]
         """
