@@ -1,0 +1,25 @@
+subworkflow preprocess:
+    workdir: "../preprocess"
+    snakefile: "../preprocess/Snakefile"
+    configfile: "config.yaml"
+
+configfile: "config.yaml"
+
+rule all:
+    input:
+        expand("output/breseq/{sample}/", sample=config["samples"])
+
+rule breseq:
+    input:
+        preprocess("output/pear/{sample}/sic_{sample}.assembled.fastq"),
+        preprocess("output/pear/{sample}/sic_{sample}.unassembled.forward.fastq"),
+        preprocess("output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq"),
+        expand("{ref}", ref=config["references"])
+    output:
+        directory("output/breseq/{sample}/")
+    log:
+        "logs/breseq/{sample}.log"
+    shell:
+        "breseq -p -o {output} -r {input[3]} -r {input[4]} -r {input[5]} \
+        --polymorphism-minimum-coverage-each-strand 5 \
+        {input[0]} {input[1]} {input[2]} > {log} 2>&1"

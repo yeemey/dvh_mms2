@@ -1,0 +1,9 @@
+references:
+  - /opt/data/wkim-data/WKim/dv.gbk
+  - /opt/data/wkim-data/WKim/mp.gbk
+  - /opt/data/wkim-data/WKim/megaplasma.gbk
+samples:
+  - Ancestor
+  - HA3.118
+adapters:
+  - /home/NETID/ymseah/Projects/ngs_preprocess/adapters_2015.fa
