@@ -20,7 +20,7 @@ def subset_gd_to_df(gdfile, cov=False):
     total coverage (total_cov), RA coverage (new_cov), JC coverage (new_junction_read_count),
     and MC-flanking coverage (left_outside_cov + right_outside_cov).
     '''
-    df = pd.read_table(gdfile, comment='#', names=range(200), dtype=str)
+    df = pd.read_csv(gdfile, comment='#', names=range(200), dtype=str, sep='\t')
     df = df.dropna(axis=1, how='all')
     # https://stackoverflow.com/questions/27700591/reading-csv-files-with-messy-structure-with-pandas
     num_columns = len(df.columns)
