@@ -2,6 +2,13 @@ import numpy as np
 import pandas as pd
 import re
 
+def sum_cov(cov_str):
+    cov_ints = cov_str.split('/')
+    total_cov = 0
+    for cov in cov_ints:
+        total_cov += int(cov)
+    return total_cov
+
 def subset_gd_to_df(gdfile, cov=False):
     '''
     Returns dataframe created from annotated.gd. All rows are preserved,
@@ -44,7 +51,7 @@ def subset_gd_to_df(gdfile, cov=False):
                     df.loc[row, 'polymorphism_frequency'] = np.nan
             if cov == True:
                 #6. major coverage counts
-                elif re.match('major_cov=', str(df.loc[row, col_index])):
+                if re.match('major_cov=', str(df.loc[row, col_index])):
                     major_cov = re.sub('major_cov=', '', str(df.loc[row, col_index]))
                     df.loc[row, 'major_cov'] = sum_cov(major_cov)
                 #7. minor coverage counts
