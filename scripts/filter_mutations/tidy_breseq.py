@@ -92,8 +92,11 @@ def subset_gd_to_df(gdfile, cov=False):
     #set frequencies type to float
     df[['frequency', 'polymorphism_frequency']] = df[['frequency', 'polymorphism_frequency']].astype(float)
     if cov == True:
-        df[['left_cov', 'right_cov']].fillna(0)
-        df['mc_cov'] = df.left_cov + df.right_cov
+        if 'left_cov' in df.columns and 'right_cov' in df.columns:
+            df[['left_cov', 'right_cov']].fillna(0)
+            df['mc_cov'] = df.left_cov + df.right_cov
+        else:
+            df['mc_cov'] = np.nan
         return df[['entry_type', 'entry_id', 'evidence_id', 'genome_id', 'position', 'mutation_detail',
                    'frequency', 'gene_product', 'reject', 'prediction', 'polymorphism_frequency',
                    'major_cov', 'minor_cov', 'total_cov', 'ra_cov', 'jc_cov', 'mc_cov']].copy()
