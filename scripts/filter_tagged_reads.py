@@ -1,5 +1,7 @@
 '''
-Filter reads that have already been tagged with sample names at header end.
+Filter reads that have already been tagged with sample names at fastq header ends.
+Sample name tags are preceded by '--'
+Usage: python filter_tagged_reads.py filename.fastq.gz R[1 or 2] tag [... tag_n]
 '''
 from sys import argv
 import gzip
