@@ -11,9 +11,9 @@ rule all:
 
 rule breseq:
     input:
-        preprocess("output/pear/{sample}/sic_{sample}.assembled.fastq"),
-        preprocess("output/pear/{sample}/sic_{sample}.unassembled.forward.fastq"),
-        preprocess("output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq"),
+        preprocess("output/pear/{sample}/sic_{sample}.assembled.fastq.gz"),
+        preprocess("output/pear/{sample}/sic_{sample}.unassembled.forward.fastq.gz"),
+        preprocess("output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq.gz"),
         expand("{ref}", ref=config["references"])
     output:
         directory("output/breseq/{sample}/")
@@ -22,4 +22,6 @@ rule breseq:
     shell:
         "breseq -p -o {output} -r {input[3]} -r {input[4]} -r {input[5]} \
         --polymorphism-minimum-coverage-each-strand 5 \
+        --consensus-minimum-coverage-each-strand 5 \
+        --polymorphism-bias-cutoff 0.001 \
         {input[0]} {input[1]} {input[2]} > {log} 2>&1"
