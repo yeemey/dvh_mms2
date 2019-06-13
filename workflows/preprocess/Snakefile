@@ -2,49 +2,56 @@ configfile: "config.yaml"
 
 rule all:
     input:
-        expand("output/pear/{sample}/sic_{sample}.assembled.fastq", sample=config["samples"]),
-        expand("output/pear/{sample}/sic_{sample}.unassembled.forward.fastq", sample=config["samples"]),
-        expand("output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq", sample=config["samples"])
+        expand("output/pear/{sample}/sic_{sample}.assembled.fastq.gz", sample=config["samples"]),
+        expand("output/pear/{sample}/sic_{sample}.unassembled.forward.fastq.gz", sample=config["samples"]),
+        expand("output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq.gz", sample=config["samples"])
 
 rule scythe:
     input:
         expand("{adapters}", adapters=config["adapters"]),
-        "/opt/data/wkim-data/Hillesland/{sample}_1.fastq",
-        "/opt/data/wkim-data/Hillesland/{sample}_2.fastq"
+        "/opt/data/wkim-data/Hillesland/{sample}_1.fastq.gz",
+        "/opt/data/wkim-data/Hillesland/{sample}_2.fastq.gz"
+    params:
+        scy_prefix="output/scythe/{sample}/scy_{sample}"
     output:
-        "output/scythe/{sample}/scy_{sample}_1.fastq",
-        "output/scythe/{sample}/scy_{sample}_2.fastq"
+        "output/scythe/{sample}/scy_{sample}_1.fastq.gz",
+        "output/scythe/{sample}/scy_{sample}_2.fastq.gz"
     log:
         "logs/scythe/{sample}.log"
     run:
-        shell("scythe -q sanger -o {output[0]} -a {input[0]} {input[1]} > {log} 2>&1")
-        shell("scythe -q sanger -o {output[1]} -a {input[0]} {input[2]} > {log} 2>&1")
+        shell("scythe -q sanger -o {params.scy_prefix}_1.fastq -a {input[0]} {input[1]} 2>&1 > {log}")
+        shell("scythe -q sanger -o {params.scy_prefix}_2.fastq -a {input[0]} {input[2]} 2>&1 > {log}")
+        shell("gzip {params.scy_prefix}*.fastq")
 
 rule sickle:
     input:
-        "output/scythe/{sample}/scy_{sample}_1.fastq",
-        "output/scythe/{sample}/scy_{sample}_2.fastq"
+        "output/scythe/{sample}/scy_{sample}_1.fastq.gz",
+        "output/scythe/{sample}/scy_{sample}_2.fastq.gz"
+    params:
+        sic_prefix="output/sickle/{sample}/sic_{sample}"
     output:
-        "output/sickle/{sample}/sic_{sample}_1.fastq",
-        "output/sickle/{sample}/sic_{sample}_2.fastq",
-        "output/sickle/{sample}/sic_{sample}_sing.fastq"
+        "output/sickle/{sample}/sic_{sample}_1.fastq.gz",
+        "output/sickle/{sample}/sic_{sample}_2.fastq.gz",
+        "output/sickle/{sample}/sic_{sample}_sing.fastq.gz"
     log:
         "logs/sickle/{sample}.log"
-    shell:
-        "sickle pe -t sanger -f {input[0]} -r {input[1]} \
-        -o {output[0]} -p {output[1]} -s {output[2]} -q 30 -l 30 > {log} 2>&1"
+    run:
+        shell("sickle pe -t sanger -f {input[0]} -r {input[1]} -o {params.sic_prefix}_1.fastq -p {params.sic_prefix}_2.fastq \
+         -s {params.sic_prefix}_sing.fastq -q 30 -l 30 2>&1 > {log}")
+        shell("gzip {params.sic_prefix}*.fastq")
 
 rule pear:
     input:
-        "output/sickle/{sample}/sic_{sample}_1.fastq",
-        "output/sickle/{sample}/sic_{sample}_2.fastq"
+        "output/sickle/{sample}/sic_{sample}_1.fastq.gz",
+        "output/sickle/{sample}/sic_{sample}_2.fastq.gz"
     params:
         prefix="output/pear/{sample}/sic_{sample}"
     output:
-        "output/pear/{sample}/sic_{sample}.assembled.fastq",
-        "output/pear/{sample}/sic_{sample}.unassembled.forward.fastq",
-        "output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq"
+        "output/pear/{sample}/sic_{sample}.assembled.fastq.gz",
+        "output/pear/{sample}/sic_{sample}.unassembled.forward.fastq.gz",
+        "output/pear/{sample}/sic_{sample}.unassembled.reverse.fastq.gz"
     log:
         "logs/pear/{sample}.log"
-    shell:
-        "pear-0.9.10-bin-64 -f {input[0]} -r {input[1]} -o {params.prefix} > {log} 2>&1"
+    run:
+        shell("pear-0.9.10-bin-64 -f {input[0]} -r {input[1]} -o {params.prefix} 2>&1 > {log}")
+        shell("gzip {params.prefix}*.fastq")
