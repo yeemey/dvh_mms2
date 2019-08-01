@@ -4,6 +4,7 @@ import pandas as pd
 import tidy_breseq as tb
 
 script, line, input_dir, sample, generation = argv
+#e.g., line=UA3, sample=U1-15, generation=100
 
 dfmut, dfev = tb.subset_gd_to_df(input_dir + '/output/evidence/annotated.gd', sample, line, generation, cov=True)
 complete_df = tb.combine_mutations_and_evidence(dfmut, dfev)
